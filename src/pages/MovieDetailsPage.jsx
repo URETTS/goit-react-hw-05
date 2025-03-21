@@ -1,5 +1,5 @@
 import { useParams, Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 const API_URL = "https://api.themoviedb.org/3/movie";
@@ -10,6 +10,7 @@ const MovieDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
+  const locationRef = useRef(location.state); 
 
   useEffect(() => {
     axios
@@ -24,16 +25,15 @@ const MovieDetailsPage = () => {
 
   return (
     <div>
-      {/* Кнопка назад */}
-      <button onClick={() => navigate(location.state?.from ?? "/movies")}>⬅ Назад</button>
+      <button onClick={() => navigate(locationRef.current?.from ?? "/movies")}>⬅ Назад</button>
 
       <h1>{movie.title}</h1>
       <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
       <p>{movie.overview}</p>
 
       <nav>
-        <Link to="cast" state={{ from: location.state?.from }}>Cast</Link>
-        <Link to="reviews" state={{ from: location.state?.from }}>Reviews</Link>
+        <Link to="cast" state={{ from: locationRef.current?.from }}>Cast</Link>
+        <Link to="reviews" state={{ from: locationRef.current?.from }}>Reviews</Link>
       </nav>
 
       <Outlet />
