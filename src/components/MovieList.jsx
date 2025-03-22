@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
 const API_URL = "https://api.themoviedb.org/3";
@@ -9,7 +9,7 @@ const MovieList = ({ type, query }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const locationRef = useRef(location.state); // Зберігаємо state через useRef
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     setLoading(true);
@@ -19,6 +19,7 @@ const MovieList = ({ type, query }) => {
         : query && query.trim() !== ""
         ? `${API_URL}/search/movie?query=${query}&language=en-US&page=1`
         : `${API_URL}/movie/popular?language=en-US&page=1`;
+
     axios
       .get(url, { headers: { Authorization: API_KEY } })
       .then(res => {
@@ -40,7 +41,9 @@ const MovieList = ({ type, query }) => {
       {movies.length > 0 ? (
         movies.map(movie => (
           <li key={movie.id}>
-            <Link to={`/movies/${movie.id}`} state={{ from: locationRef.current?.from, movie }}>
+            <Link 
+              to={`/movies/${movie.id}`} 
+              state={{ from: location.pathname, searchParams: searchParams.toString() }}>
               {movie.title}
             </Link>
           </li>
